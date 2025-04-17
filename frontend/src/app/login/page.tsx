@@ -6,14 +6,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Zod validation schema
-const RegisterSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+// Zod validation schema for login
+const LoginSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(1, "Password is required"),
 });
 
-type RegisterFormData = z.infer<typeof RegisterSchema>;
+type LoginFormData = z.infer<typeof LoginSchema>;
 
 // Reusable input field
 const InputField = ({
@@ -23,7 +22,7 @@ const InputField = ({
   type = "text",
 }: {
   label: string;
-  register: ReturnType<ReturnType<typeof useForm>["register"]>; // Updated type
+  register: ReturnType<ReturnType<typeof useForm>["register"]>;
   error?: { message?: string };
   type?: string;
 }) => (
@@ -53,38 +52,48 @@ const Button = ({
     disabled={loading}
     className='w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-2xl disabled:opacity-50'
   >
-    {loading ? "Registering..." : children}
+    {loading ? "Signing in..." : children}
   </button>
 );
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(RegisterSchema),
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(LoginSchema),
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
     setMessage(null);
     try {
       const res = await axios.post(
-        "https://cc-1021100307.onrender.com/register",
+        // "http://localhost:5000/signin"
+        "https://cc-1021100307.onrender.com/login",
         data
       );
-      setMessage("Registration successful! Redirecting...");
-      console.log("✅ Registered:", res.data);
+      setMessage("Login successful! Redirecting...");
+      console.log("✅ Logged in:", res.data);
+
+      // Store the token if your backend returns one
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
       setTimeout(() => {
-        window.location.href = "/login";
+        window.location.href = "/dashboard"; // Redirect to dashboard or home page
       }, 1500);
     } catch (err: any) {
+      console.error("Login error:", err);
+      console.error("Status:", err.response?.status);
+      console.error("Response data:", err.response?.data);
       const errorMsg =
-        err.response?.data?.message || "Registration failed. Try again.";
+        err.response?.data?.message || "Login failed. Try again.";
       setMessage(errorMsg);
     } finally {
       setLoading(false);
@@ -98,14 +107,9 @@ export default function RegisterPage() {
         className='max-w-md w-full bg-white p-8 shadow-md rounded-2xl'
       >
         <h2 className='text-2xl font-semibold mb-6 text-center'>
-          Welcome! Register with Us
+          Welcome Back! Sign In
         </h2>
 
-        <InputField
-          label='Name'
-          register={register("name")}
-          error={errors.name}
-        />
         <InputField
           label='Email'
           register={register("email")}
@@ -119,15 +123,21 @@ export default function RegisterPage() {
         />
 
         {message && (
-          <p className='text-sm mt-2 text-center text-red-600'>{message}</p>
+          <p
+            className={`text-sm mt-2 text-center ${
+              message.includes("successful") ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {message}
+          </p>
         )}
 
-        <Button loading={loading}>Register</Button>
+        <Button loading={loading}>Sign In</Button>
 
         <p className='mt-8 text-center'>
-          Already have an account?{" "}
-          <a className='text-blue-500' href='/login'>
-            Sign in
+          Don't have an account yet?{" "}
+          <a className='text-blue-500' href='/register'>
+            Create an account
           </a>
         </p>
       </form>

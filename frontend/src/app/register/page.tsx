@@ -56,7 +56,7 @@ const Button = ({
   </button>
 );
 
-export default function SignUp() {
+export default function RegisterPage() {
   const router = useRouter();
   const {
     register,
@@ -73,6 +73,7 @@ export default function SignUp() {
 
     try {
       const response = await axios.post(
+        // "http://localhost:5000/signup",
         "https://cc-1021100307.onrender.com/signup",
         data
       );
