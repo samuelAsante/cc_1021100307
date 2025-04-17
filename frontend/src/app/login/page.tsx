@@ -74,7 +74,7 @@ export default function LoginPage() {
     try {
       const res = await axios.post(
         // "http://localhost:5000/signin"
-        "https://cc-1021100307.onrender.com/login",
+        "https://cc-1021100307.onrender.com/signin",
         data
       );
       setMessage("Login successful! Redirecting...");
