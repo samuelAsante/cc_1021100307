@@ -33,7 +33,7 @@ export default function AddContactPage() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      await axios.post('http://localhost:5000/contacts', data);
+      await axios.post('https://cc-1021100307.onrender.com', data);
       router.push('/dashboard');
     } catch (err: any) {
       const message = err.response?.data?.message || 'Something went wrong.';

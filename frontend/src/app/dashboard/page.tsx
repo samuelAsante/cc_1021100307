@@ -21,7 +21,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const response = await axios.get<Contact[]>('http://localhost:5000/contacts');
+        const response = await axios.get<Contact[]>('https://cc-1021100307.onrender.com');
         setContacts(response.data);
       } catch (err: any) {
         setError('Failed to load contacts. Please try again.');
@@ -37,7 +37,7 @@ export default function DashboardPage() {
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this contact?')) {
       try {
-        await axios.delete(`http://localhost:5000/contacts/${id}`);
+        await axios.delete(`https://cc-1021100307.onrender.com/${id}`);
         setContacts(contacts.filter(contact => contact.contact_id !== id));
       } catch (err) {
         alert('Failed to delete contact.');

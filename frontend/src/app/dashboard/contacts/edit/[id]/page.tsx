@@ -28,7 +28,7 @@ export default function EditContactPage() {
   useEffect(() => {
     const fetchContact = async () => {
       try {
-        const response = await axios.get<Contact>(`http://localhost:5000/contacts/${id}`);
+        const response = await axios.get<Contact>(`https://cc-1021100307.onrender.com/${id}`);
         setForm(response.data);
       } catch (err) {
         setError('Failed to load contact.');
@@ -47,7 +47,7 @@ export default function EditContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/contacts/${id}`, form);
+      await axios.put(`https://cc-1021100307.onrender.com/${id}`, form);
       router.push('/dashboard');
     } catch (err) {
       setError('Failed to update contact.');
