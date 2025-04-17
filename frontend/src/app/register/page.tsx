@@ -6,8 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-
-
+import type { UseFormRegisterReturn } from "react-hook-form";
 
 const SignUpSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -24,7 +23,7 @@ const InputField = ({
   type = "text",
 }: {
   label: string;
-  register: ReturnType<typeof useForm>["register"];
+  register: UseFormRegisterReturn; 
   error?: { message?: string };
   type?: string;
 }) => (

@@ -1,18 +1,21 @@
 'use client';
 
-import React, { useState } from "react";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-const SignInSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+// Zod validation schema
+const RegisterSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-type SignInData = z.infer<typeof SignInSchema>;
+type RegisterFormData = z.infer<typeof RegisterSchema>;
 
+// Reusable input field
 const InputField = ({
   label,
   register,
@@ -20,7 +23,7 @@ const InputField = ({
   type = "text",
 }: {
   label: string;
-  register: ReturnType<typeof useForm>["register"];
+  register: ReturnType<ReturnType<typeof useForm>["register"]>; // Updated type
   error?: { message?: string };
   type?: string;
 }) => (
@@ -37,6 +40,7 @@ const InputField = ({
   </div>
 );
 
+// Submit button
 const Button = ({
   children,
   loading = false,
@@ -49,33 +53,35 @@ const Button = ({
     disabled={loading}
     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-2xl disabled:opacity-50"
   >
-    {loading ? "Signing in..." : children}
+    {loading ? 'Registering...' : children}
   </button>
 );
 
-export default function SignIn() {
+export default function RegisterPage() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInData>({ resolver: zodResolver(SignInSchema) });
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(RegisterSchema),
+  });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const onSubmit = async (data: SignInData) => {
+  const onSubmit = async (data: RegisterFormData) => {
     setLoading(true);
     setMessage(null);
     try {
-      const response = await axios.post("http://localhost:5000/signin", data);
-      setMessage("Sign in successful! Redirecting...");
-      console.log("Success:", response.data);
+      const res = await axios.post('http://localhost:5000/register', data);
+      setMessage('Registration successful! Redirecting...');
+      console.log('✅ Registered:', res.data);
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        window.location.href = '/login';
       }, 1500);
     } catch (err: any) {
       const errorMsg =
-        err.response?.data?.message || "Sign in failed. Please try again.";
+        err.response?.data?.message || 'Registration failed. Try again.';
       setMessage(errorMsg);
     } finally {
       setLoading(false);
@@ -83,28 +89,44 @@ export default function SignIn() {
   };
 
   return (
-    <div className="items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-sm mx-auto mt-10 p-8  shadow-md rounded-2xl"
-    >
-      <h2 className="text-2xl font-semibold mb-6 text-center">Sign In</h2>
-      <InputField
-        label="Email"
-        register={register("email")}
-        error={errors.email}
-      />
-      <InputField
-        label="Password"
-        register={register("password")}
-        error={errors.password}
-        type="password"
-      />
-      {message && (
-        <p className="text-sm mt-2 text-center text-red-600">{message}</p>
-      )}
-      <Button loading={loading}>Sign In</Button>
-      <p className="mt-8 text-center">Don't have an account? <a className="text-red-500" href="/register">Register</a></p>
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-md w-full bg-white p-8 shadow-md rounded-2xl"
+      >
+        <h2 className="text-2xl font-semibold mb-6 text-center">
+          Welcome! Register with Us
+        </h2>
+
+        <InputField
+          label="Name"
+          register={register("name")}
+          error={errors.name}
+        />
+        <InputField
+          label="Email"
+          register={register("email")}
+          error={errors.email}
+        />
+        <InputField
+          label="Password"
+          register={register("password")}
+          error={errors.password}
+          type="password"
+        />
+
+        {message && (
+          <p className="text-sm mt-2 text-center text-red-600">{message}</p>
+        )}
+
+        <Button loading={loading}>Register</Button>
+
+        <p className="mt-8 text-center">
+          Already have an account?{' '}
+          <a className="text-blue-500" href="/login">
+            Sign in
+          </a>
+        </p>
       </form>
     </div>
   );
