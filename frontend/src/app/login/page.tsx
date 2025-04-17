@@ -73,7 +73,7 @@ export default function RegisterPage() {
     setLoading(true);
     setMessage(null);
     try {
-      const res = await axios.post('http://localhost:5000/register', data);
+      const res = await axios.post('https://cc-1021100307.onrender.comregister', data);
       setMessage('Registration successful! Redirecting...');
       console.log('✅ Registered:', res.data);
       setTimeout(() => {

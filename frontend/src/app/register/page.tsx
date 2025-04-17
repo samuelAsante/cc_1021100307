@@ -72,7 +72,7 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/signup", data);
+      const response = await axios.post("https://cc-1021100307.onrender.comsignup", data);
       console.log("Registered:", response.data);
       router.push("/login");
     } catch (err: any) {
